@@ -1,3 +1,4 @@
+import { createNewUserInDatabase } from "@/lib/utils";
 import { Manager, Tenant } from "@/types/prismaTypes";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
@@ -14,7 +15,7 @@ export const api = createApi({
       const session = await fetchAuthSession();
       const { idToken } = session.tokens ?? {};
       if (idToken) {
-        headers.set("Authorization", `Bearer ${idToken}`); 
+        headers.set("Authorization", `Bearer ${idToken}`);
       }
       return headers;
     }
@@ -35,20 +36,37 @@ export const api = createApi({
             : `/tenants/${user.userId}`;
 
           let userDetailsResponse = await fetchWitchBQ(endpoint)
-          // if user is not found, return null
+
+
+
+          // if user is not found, create a new user
+          if (userDetailsResponse.error &&
+            userDetailsResponse.error.status === 404
+          ) {
+            userDetailsResponse = await createNewUserInDatabase(
+              user,
+              idToken,
+              userRole,
+              fetchWitchBQ
+            )
+          }
+
           return {
             data: {
-              cognitoInfo: {...user},
+              cognitoInfo: { ...user },
               userInfo: userDetailsResponse.data as Tenant | Manager,
               userRole
             }
           }
         } catch (error: any) {
-          return {error: error.message || "Could not fetch user details"};
+          return { error: error.message || "Could not fetch user details" };
         }
       }
     }),
   }),
 });
 
-export const { } = api;
+export const {
+
+  useGetAuthUserQuery,
+ } = api;

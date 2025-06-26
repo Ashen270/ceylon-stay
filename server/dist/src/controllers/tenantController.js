@@ -35,7 +35,7 @@ const getTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getTenant = getTenant;
 const createTenant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { cognitoId, name, email, phoneNumber } = req.params;
+        const { cognitoId, name, email, phoneNumber } = req.body;
         const tenant = yield prisma.tenant.create({
             data: {
                 cognitoId,

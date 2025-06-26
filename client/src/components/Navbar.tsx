@@ -1,3 +1,4 @@
+"use client"
 import { NAVBAR_HEIGHT } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'

@@ -32,7 +32,7 @@ const getManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getManager = getManager;
 const createManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { cognitoId, name, email, phoneNumber } = req.params;
+        const { cognitoId, name, email, phoneNumber } = req.body;
         const manager = yield prisma.manager.create({
             data: {
                 cognitoId,

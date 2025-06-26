@@ -35,10 +35,7 @@ export const api = createApi({
             `/managers/${user.userId}`
             : `/tenants/${user.userId}`;
 
-          let userDetailsResponse = await fetchWitchBQ(endpoint)
-
-
-
+          let userDetailsResponse = await fetchWitchBQ(endpoint);
           // if user is not found, create a new user
           if (userDetailsResponse.error &&
             userDetailsResponse.error.status === 404

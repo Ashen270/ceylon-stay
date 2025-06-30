@@ -51,9 +51,9 @@ const NavBar = () => {
                                 className='w-6 h-6'
                             />
                             <div className='text-xl font-bold'>
-                                SERENDIB
+                                Ceylon
                                 <span className='text-secondary-500 font-light hover:!text-primary-500'>
-                                    Estate
+                                    Stay
                                 </span>
                             </div>
                         </div>
@@ -82,7 +82,7 @@ const NavBar = () => {
                     )}
                 </div>
                 {!isDashboardPage && (<p className='text-primary-200 hidden md:block'>
-                    Discover your next finest property in Sri Lanka with Serendib Estate.
+                    Discover your next finest property in Sri Lanka with CeylonStay.
                 </p>)}
                 <div className='flex items-center gap-5 '>
                     {authUser ? (

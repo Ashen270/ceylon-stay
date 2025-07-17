@@ -68,11 +68,20 @@ export const api = createApi({
       }),
       invalidatesTags: (result) => [{ type: "Tenants", id: result?.id }], // Invalidate the tenant cache after updating
     }),
+    updateManagerSettings: build.mutation<Manager, { cognitoId: string } & Partial<Tenant>>({ //query for get request mutation for post and put request
+      query: ({ cognitoId, ...updatedTenant }) => ({
+        url: `/managers/${cognitoId}`,
+        method: "PUT",
+        body: updatedTenant,
+      }),
+      invalidatesTags: (result) => [{ type: "Managers", id: result?.id }], // Invalidate the tenant cache after updating
+    }),
   })  
 })
 
 export const {
 
   useGetAuthUserQuery,
-  useUpdateTenantSettingsMutation
+  useUpdateTenantSettingsMutation,
+  useUpdateManagerSettingsMutation,
 } = api;

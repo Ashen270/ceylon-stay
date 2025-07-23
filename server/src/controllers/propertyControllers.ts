@@ -1,9 +1,17 @@
-import { Request, Response } from "express";
+import { application, Request, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { wktToGeoJSON } from "@terraformer/wkt";
+import { S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import axios from "axios";
+import { Location } from "@prisma/client";
 
 
 const prisma = new PrismaClient();
 
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+});
 
 export const getProperties = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -128,11 +136,143 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
       }
       `;
 
+      const properties = await prisma.$queryRaw(completeQuery);
+      res.json(properties);
+
   } catch (error: any) {
     res.status(500).json({ message: `error retriving Properties: ${error.message}`, error: error.message });
   }
 }
 
+export const getPropertyById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {id} = req.params;
+    const property = await prisma.property.findUnique({
+      where: { id: Number(id) },
+      include: {
+        location: true,
+      },
+    });
+
+    if (property){
+      const coordinates: {coordinates: string} [] =
+      await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
+
+      const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
+      const longitude = geoJSON.coordinates[0];
+      const latitude = geoJSON.coordinates[1];
+
+      const  propertyWithCoordinates = {
+        ...property,
+        location: {
+          ...property.location,
+          coordinates: {
+            longitude,
+            latitude,
+          },
+        },
+      };
+      res.json(propertyWithCoordinates);
+    }
+  } catch (err: any) {
+    res.status(500).json({ message: `Error retrieving property: ${err.message}`, error: err.message });
+    
+  }
+
+  
+}
+
+export const createProperty = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const files =req.files as Express.Multer.File[];
+    const {
+      address,
+      city,
+      state,
+      country,
+      postalCode,
+      managerCognitoId,
+      ...propertyData
+    } = req.body;
+
+    const photoUrls = await Promise.all(
+      files.map(async (file) => {
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME!,  //  aws s3 location
+          Key: `properties/${Date.now()}-${file.originalname}`,   // Unique key for each file
+          Body: file.buffer,  // File content
+          ContentType: file.mimetype,  // Set the content type
+        }
+        const uploadResult =  await new Upload({
+          client: s3Client,
+          params: uploadParams,
+        }).done();
+        return uploadResult.Location;  
+      })
+    );
+
+    const geoCodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
+      {
+        street: address,
+        city,
+        country,
+        postalcode: postalCode,
+        format: "json",
+        limit: "1",
+      }
+    ).toString()}`;
+    const geoCodingResponse = await axios.get(geoCodingUrl,{
+      headers:{
+        "User-Agent": "CeylonStayApp (ashenshamilka270@gmail.com)"
+      }
+    });
+
+    const [logitude, latitude] = geoCodingResponse.data[0]?.lon && geoCodingResponse.data[0]?.lat ?[
+      parseFloat(geoCodingResponse.data[0]?.lon),
+      parseFloat(geoCodingResponse.data[0]?.lat)
+    ] : [0,0];
 
 
+    // Create Location
+    const [location] = await prisma.$queryRaw<Location[]>`
+    INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
+    VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${logitude}, ${latitude}), 4326))
+    RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
+    `;
 
+    const newProperty = await prisma.property.create({
+      data: {
+        ...propertyData,
+        photoUrls,
+        locationId: location.id,
+        managerCognitoId,
+        amenities:
+          typeof propertyData.amenities === "string"
+            ? propertyData.amenities.split(",")
+            : [],
+        highlights:
+          typeof propertyData.highlights === "string"
+            ? propertyData.highlights.split(",")
+            : [],
+      isPetsAllowed: propertyData.isPetsAllowed === "true",
+      isPrkingInculuded: propertyData.isPrkingIncluded === "true",
+      pricePerMonth: parseFloat(propertyData.pricePerMonth),
+      securityDeposit: parseFloat(propertyData.securityDeposit),
+      applicationFee: parseFloat(propertyData.applicationFee),
+      beds: parseInt(propertyData.beds),
+      baths: parseFloat(propertyData.baths),
+      squreFeet: parseInt(propertyData.squreFeet),          
+      },
+      include: {
+        location: true,
+        manager: true,
+      },
+    });
+    res.status(201).json(newProperty);
+  } catch (err: any) {
+    res.status(500).json({ message: `Error creating property: ${err.message}`, error: err.message });
+    
+  }
+
+  
+}

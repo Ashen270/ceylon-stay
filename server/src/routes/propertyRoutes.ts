@@ -1,5 +1,5 @@
 import express  from "express";
-import { getProperties, getPropertyById,  createProperty } from "../controllers/propertyController";
+import { getProperties, getPropertyById,  createProperty } from "../controllers/propertyControllers";
 import { authMiddleware } from "../middleware/authMiddleware";
 import multer from "multer";
 

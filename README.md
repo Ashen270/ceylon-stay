@@ -1,6 +1,6 @@
 # 🏠 CeylonStay
 
-![Logo](path-to-your-logo.png)
+
 
 > A web-based platform for property management featuring role-based login for tenants and managers. Tenants can book properties, while managers can oversee and manage their listings.
 

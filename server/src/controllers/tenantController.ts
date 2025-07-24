@@ -74,7 +74,7 @@ export const getCurrentResidences = async (req: Request, res: Response): Promise
         })
 
         const properties = await prisma.property.findMany({
-            where: { tenants: {some: {cognitoId }}},
+            where: { tenants: { some: { cognitoId } } },
             include: {
                 location: true,
             },
@@ -107,5 +107,13 @@ export const getCurrentResidences = async (req: Request, res: Response): Promise
 
     }
 
+}
 
+export const addFavoriteProperty = async (req: Request, res: Response): Promise<void> => {
+    try {
+
+    } catch (err: any) {
+        res.status(500).json({ message: `Error adding Favorite property: ${err.message}`, error: err.message });
+
+    }
 }

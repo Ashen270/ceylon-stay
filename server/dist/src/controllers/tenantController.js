@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentResidences = exports.updateTenant = exports.createTenant = exports.getTenant = void 0;
+exports.addFavoriteProperty = exports.getCurrentResidences = exports.updateTenant = exports.createTenant = exports.getTenant = void 0;
 const client_1 = require("@prisma/client");
 const wkt_1 = require("@terraformer/wkt");
 const prisma = new client_1.PrismaClient();
@@ -101,3 +101,11 @@ const getCurrentResidences = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getCurrentResidences = getCurrentResidences;
+const addFavoriteProperty = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+    }
+    catch (err) {
+        res.status(500).json({ message: `Error adding Favorite property: ${err.message}`, error: err.message });
+    }
+});
+exports.addFavoriteProperty = addFavoriteProperty;

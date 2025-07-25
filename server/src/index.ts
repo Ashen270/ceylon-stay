@@ -10,6 +10,8 @@ import { authMiddleware } from './middleware/authMiddleware';
 import tenantRoutes from './routes/tenantRoutes';
 import managerRoutes from './routes/managerRoutes';
 import propertyRoutes from './routes/propertyRoutes';
+import leaseRoutes from './routes/leaseRoutes';
+import applicationRoutes from './routes/applicationRoutes';
 
 
 // Configurations
@@ -31,8 +33,10 @@ app.get('/', (req, res) => {
   res.send('this is the home route!');
 });
 app.use("/properties", propertyRoutes);
+app.use("/leases", leaseRoutes); 
 app.use("/tenants", authMiddleware(['tenant']), tenantRoutes);
 app.use("/managers", authMiddleware(['manager']), managerRoutes);
+app.use("/application", applicationRoutes)
 
 
 //server

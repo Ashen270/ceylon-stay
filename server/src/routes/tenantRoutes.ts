@@ -1,5 +1,5 @@
 import express  from "express";
-import { getTenant, createTenant, updateTenant, getCurrentResidences } from "../controllers/tenantController";
+import { getTenant, createTenant, updateTenant, getCurrentResidences, addFavoriteProperty, removeFavoriteProperty  } from "../controllers/tenantController";
 
 
 const router = express.Router();
@@ -7,7 +7,9 @@ const router = express.Router();
 router.get("/:cognitoId", getTenant);
 router.get("/:cognitoId/current-residences", getCurrentResidences);
 router.post("/", createTenant);
-router.put("/:cognitoId", updateTenant); // Assuming update is the same as create for simplicity
+router.put("/:cognitoId", updateTenant);
+router.post("/:cognitoId/favorites/:propertyId", addFavoriteProperty);
+router.delete("/:cognitoId/favorites/:propertyId", removeFavoriteProperty);
 
 
 export default router;

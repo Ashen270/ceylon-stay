@@ -9,5 +9,7 @@ const router = express_1.default.Router();
 router.get("/:cognitoId", tenantController_1.getTenant);
 router.get("/:cognitoId/current-residences", tenantController_1.getCurrentResidences);
 router.post("/", tenantController_1.createTenant);
-router.put("/:cognitoId", tenantController_1.updateTenant); // Assuming update is the same as create for simplicity
+router.put("/:cognitoId", tenantController_1.updateTenant);
+router.post("/:cognitoId/favorites/:propertyId", tenantController_1.addFavoriteProperty);
+router.delete("/:cognitoId/favorites/:propertyId", tenantController_1.removeFavoriteProperty);
 exports.default = router;

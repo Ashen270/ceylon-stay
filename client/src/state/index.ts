@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { set } from "zod";
+
 
 export interface FilterState {
   location: string;
@@ -7,7 +7,7 @@ export interface FilterState {
   baths: string;
   propertyType: string;
   amenities: string[];
-  avalableFrom: string;
+  availableFrom: string;
   priceRange: [number, number] | [null, null];
   squareFeet: [number, number] | [null, null];
   coordinates: [number, number];
@@ -29,7 +29,7 @@ export const initialState: InitialStateTypes = {
     baths: "any",
     propertyType: "any",
     amenities: [],
-    avalableFrom: "nay",
+    availableFrom: "any",
     priceRange: [null, null],
     squareFeet: [null, null],
     coordinates: [79.86, 6.93],

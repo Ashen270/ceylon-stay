@@ -22,10 +22,10 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
       beds,
       baths,
       propertyType,
-      squreFeetMin,
-      squreFeetMax,
+      squareFeetMin,
+      squareFeetMax,
       amenities,
-      avalableFrom,
+      availableFrom,
       latitude,
       longitude,
     } = req.query;
@@ -59,14 +59,14 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
         Prisma.sql`p.baths >= ${Number(baths)}`
       );
     }
-    if (squreFeetMin) {
+    if (squareFeetMin) {
       whereConditions.push(
-        Prisma.sql`p."squreFeet" >= ${Number(squreFeetMin)}`
+        Prisma.sql`p."squreFeet" >= ${Number(squareFeetMin)}`
       );
     }
-    if (squreFeetMax) {
+    if (squareFeetMax) {
       whereConditions.push(
-        Prisma.sql`p."squreFeet" <= ${Number(squreFeetMax)}`
+        Prisma.sql`p."squreFeet" <= ${Number(squareFeetMax)}`
       );
     }
     if (propertyType && propertyType !== "any") {
@@ -80,11 +80,11 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
         Prisma.sql`p.amenities @> ${(amenitiesArray)}`
       );
     }
-    if (avalableFrom && avalableFrom !== "any") {
-      const avalableFromDate =
-        typeof avalableFrom === 'string' ? avalableFrom : null;
-      if (avalableFromDate) {
-        const date = new Date(avalableFromDate);
+    if (availableFrom && availableFrom !== "any") {
+      const availableFromDate =
+        typeof availableFrom === 'string' ? availableFrom : null;
+      if (availableFromDate) {
+        const date = new Date(availableFromDate);
         if (!isNaN(date.getTime())) {
           whereConditions.push(
             Prisma.sql`EXISTS (
@@ -125,7 +125,7 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
         'coordinates',  json_build_object(
           'longitude', ST_X(l."coordinates" ::geometry),
           'latitude', ST_Y(l."coordinates" ::geometry)
-        ),
+        )
        ) as location
       FROM "Property" p
       JOIN "Location" l ON p."locationId" = l.id

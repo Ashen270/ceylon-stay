@@ -225,8 +225,8 @@ const FiltersFull = () => {
                     <Input
                         type="date"
                         value={
-                            localFilters.avalableFrom !== "any"
-                                ? localFilters.avalableFrom
+                            localFilters.availableFrom !== "any"
+                                ? localFilters.availableFrom
                                 : ""
                         }
                         onChange={(e) =>

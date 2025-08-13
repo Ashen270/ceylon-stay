@@ -35,7 +35,7 @@ const s3Client = new client_s3_1.S3Client({
 });
 const getProperties = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { favoriteIds, priceMin, priceMax, beds, baths, propertyType, squreFeetMin, squreFeetMax, amenities, avalableFrom, latitude, longitude, } = req.query;
+        const { favoriteIds, priceMin, priceMax, beds, baths, propertyType, squareFeetMin, squareFeetMax, amenities, availableFrom, latitude, longitude, } = req.query;
         let whereConditions = [];
         if (favoriteIds) {
             const favoriteIdsArray = favoriteIds.split(',').map(Number);
@@ -53,11 +53,11 @@ const getProperties = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (baths && baths !== "any") {
             whereConditions.push(client_1.Prisma.sql `p.baths >= ${Number(baths)}`);
         }
-        if (squreFeetMin) {
-            whereConditions.push(client_1.Prisma.sql `p."squreFeet" >= ${Number(squreFeetMin)}`);
+        if (squareFeetMin) {
+            whereConditions.push(client_1.Prisma.sql `p."squreFeet" >= ${Number(squareFeetMin)}`);
         }
-        if (squreFeetMax) {
-            whereConditions.push(client_1.Prisma.sql `p."squreFeet" <= ${Number(squreFeetMax)}`);
+        if (squareFeetMax) {
+            whereConditions.push(client_1.Prisma.sql `p."squreFeet" <= ${Number(squareFeetMax)}`);
         }
         if (propertyType && propertyType !== "any") {
             whereConditions.push(client_1.Prisma.sql `p."propertyType" = ${propertyType} ::"PropertyType"`);
@@ -66,10 +66,10 @@ const getProperties = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const amenitiesArray = amenities.split(',');
             whereConditions.push(client_1.Prisma.sql `p.amenities @> ${(amenitiesArray)}`);
         }
-        if (avalableFrom && avalableFrom !== "any") {
-            const avalableFromDate = typeof avalableFrom === 'string' ? avalableFrom : null;
-            if (avalableFromDate) {
-                const date = new Date(avalableFromDate);
+        if (availableFrom && availableFrom !== "any") {
+            const availableFromDate = typeof availableFrom === 'string' ? availableFrom : null;
+            if (availableFromDate) {
+                const date = new Date(availableFromDate);
                 if (!isNaN(date.getTime())) {
                     whereConditions.push(client_1.Prisma.sql `EXISTS (
                 SELECT 1 FROM "Lease" l 
@@ -103,7 +103,7 @@ const getProperties = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         'coordinates',  json_build_object(
           'longitude', ST_X(l."coordinates" ::geometry),
           'latitude', ST_Y(l."coordinates" ::geometry)
-        ),
+        )
        ) as location
       FROM "Property" p
       JOIN "Location" l ON p."locationId" = l.id

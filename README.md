@@ -9,6 +9,8 @@
 ## 📸 Screenshot
 
 ![Screenshot](./client/public/homescreen.png)
+![Screenshot](./client/public/search_page.png)
+
 
 ---
 

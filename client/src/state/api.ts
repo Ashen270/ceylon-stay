@@ -61,14 +61,7 @@ export const api = createApi({
         }
       }
     }),
-    updateTenantSettings: build.mutation<Tenant, { cognitoId: string } & Partial<Tenant>>({ //query for get request mutation for post and put request
-      query: ({ cognitoId, ...updatedTenant }) => ({
-        url: `/tenants/${cognitoId}`,
-        method: "PUT",
-        body: updatedTenant,
-      }),
-      invalidatesTags: (result) => [{ type: "Tenants", id: result?.id }], // Invalidate the tenant cache after updating
-    }),
+
     updateManagerSettings: build.mutation<Manager, { cognitoId: string } & Partial<Tenant>>({ //query for get request mutation for post and put request
       query: ({ cognitoId, ...updatedTenant }) => ({
         url: `/managers/${cognitoId}`,
@@ -112,7 +105,40 @@ export const api = createApi({
 
     //tenant Related Endpoints
 
+     getTenant: build.query<Tenant, string>({
+      query: (cognitoId) => `tenants/${cognitoId}`,
+      providesTags: (result) => [{ type: "Tenants", id: result?.id }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          error: "Failed to load tenant profile.",
+        });
+      },
+    }),
 
+    getCurrentResidences: build.query<Property[], string>({
+      query: (cognitoId) => `tenants/${cognitoId}/current-residences`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Properties" as const, id })),
+              { type: "Properties", id: "LIST" },
+            ]
+          : [{ type: "Properties", id: "LIST" }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          error: "Failed to fetch current residences.",
+        });
+      },
+    }),
+
+    updateTenantSettings: build.mutation<Tenant, { cognitoId: string } & Partial<Tenant>>({ //query for get request mutation for post and put request
+      query: ({ cognitoId, ...updatedTenant }) => ({
+        url: `/tenants/${cognitoId}`,
+        method: "PUT",
+        body: updatedTenant,
+      }),
+      invalidatesTags: (result) => [{ type: "Tenants", id: result?.id }], // Invalidate the tenant cache after updating
+    }),
 
     addFavoriteProperty: build.mutation<
       Tenant,
@@ -164,4 +190,7 @@ export const {
   useUpdateTenantSettingsMutation,
   useUpdateManagerSettingsMutation,
   useGetPropertiesQuery,
+  useAddFavoritePropertyMutation,
+  useRemoveFavoritePropertyMutation,
+  useGetTenantQuery,
 } = api;

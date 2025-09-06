@@ -34,7 +34,7 @@ app.use("/properties", propertyRoutes_1.default);
 app.use("/leases", leaseRoutes_1.default);
 app.use("/tenants", (0, authMiddleware_1.authMiddleware)(['tenant']), tenantRoutes_1.default);
 app.use("/managers", (0, authMiddleware_1.authMiddleware)(['manager']), managerRoutes_1.default);
-app.use("/application", applicationRoutes_1.default);
+app.use("/applications", applicationRoutes_1.default);
 //server
 const PORT = process.env.PORT || 4001;
 ;

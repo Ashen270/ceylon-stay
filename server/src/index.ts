@@ -36,7 +36,7 @@ app.use("/properties", propertyRoutes);
 app.use("/leases", leaseRoutes); 
 app.use("/tenants", authMiddleware(['tenant']), tenantRoutes);
 app.use("/managers", authMiddleware(['manager']), managerRoutes);
-app.use("/application", applicationRoutes)
+app.use("/applications", applicationRoutes)
 
 
 //server

@@ -9,7 +9,7 @@ import {
 } from "@/types/prismaTypes";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
-import { FiltersState } from ".";
+import { FilterState } from ".";
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -78,7 +78,7 @@ export const api = createApi({
     // property related endpoints
     getProperties: build.query<
       Property[],
-      Partial<FiltersState> & { favoriteIds?: number[] }
+      Partial<FilterState> & { favoriteIds?: number[] }
     >({
       query: (filters) => {
         const params = cleanParams({

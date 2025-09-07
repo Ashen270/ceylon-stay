@@ -1,4 +1,4 @@
-import { FiltersState, initialState, setFilters } from "@/state";
+import { FilterState, initialState, setFilters } from "@/state";
 import { useAppSelector } from "@/state/redux";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -29,7 +29,7 @@ const FiltersFull = () => {
     (state) => state.global.isFiltersFullOpen
   );
 
-  const updateURL = debounce((newFilters: FiltersState) => {
+  const updateURL = debounce((newFilters: FilterState) => {
     const cleanFilters = cleanParams(newFilters);
     const updatedSearchParams = new URLSearchParams();
 

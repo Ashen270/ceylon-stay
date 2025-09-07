@@ -227,7 +227,7 @@ export const createProperty = async (req: Request, res: Response): Promise<void>
       }
     });
 
-    const [logitude, latitude] = geoCodingResponse.data[0]?.lon && geoCodingResponse.data[0]?.lat ?[
+    const [longitude, latitude] = geoCodingResponse.data[0]?.lon && geoCodingResponse.data[0]?.lat ?[
       parseFloat(geoCodingResponse.data[0]?.lon),
       parseFloat(geoCodingResponse.data[0]?.lat)
     ] : [0,0];
@@ -236,7 +236,7 @@ export const createProperty = async (req: Request, res: Response): Promise<void>
     // Create Location
     const [location] = await prisma.$queryRaw<Location[]>`
     INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
-    VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${logitude}, ${latitude}), 4326))
+    VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
     RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
     `;
 
@@ -255,13 +255,13 @@ export const createProperty = async (req: Request, res: Response): Promise<void>
             ? propertyData.highlights.split(",")
             : [],
       isPetsAllowed: propertyData.isPetsAllowed === "true",
-      isPrkingInculuded: propertyData.isPrkingIncluded === "true",
+      isParkingIncluded: propertyData.isParkingIncluded === "true",
       pricePerMonth: parseFloat(propertyData.pricePerMonth),
       securityDeposit: parseFloat(propertyData.securityDeposit),
       applicationFee: parseFloat(propertyData.applicationFee),
       beds: parseInt(propertyData.beds),
       baths: parseFloat(propertyData.baths),
-      squreFeet: parseInt(propertyData.squreFeet),          
+      squareFeet: parseInt(propertyData.squareFeet),          
       },
       include: {
         location: true,
@@ -270,6 +270,7 @@ export const createProperty = async (req: Request, res: Response): Promise<void>
     });
     res.status(201).json(newProperty);
   } catch (err: any) {
+    console.error("Error creating property:", err);
     res.status(500).json({ message: `Error creating property: ${err.message}`, error: err.message });
     
   }

@@ -178,14 +178,14 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 "User-Agent": "CeylonStayApp (ashenshamilka270@gmail.com)"
             }
         });
-        const [logitude, latitude] = ((_a = geoCodingResponse.data[0]) === null || _a === void 0 ? void 0 : _a.lon) && ((_b = geoCodingResponse.data[0]) === null || _b === void 0 ? void 0 : _b.lat) ? [
+        const [longitude, latitude] = ((_a = geoCodingResponse.data[0]) === null || _a === void 0 ? void 0 : _a.lon) && ((_b = geoCodingResponse.data[0]) === null || _b === void 0 ? void 0 : _b.lat) ? [
             parseFloat((_c = geoCodingResponse.data[0]) === null || _c === void 0 ? void 0 : _c.lon),
             parseFloat((_d = geoCodingResponse.data[0]) === null || _d === void 0 ? void 0 : _d.lat)
         ] : [0, 0];
         // Create Location
         const [location] = yield prisma.$queryRaw `
     INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
-    VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${logitude}, ${latitude}), 4326))
+    VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
     RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
     `;
         const newProperty = yield prisma.property.create({
@@ -193,7 +193,7 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     ? propertyData.amenities.split(",")
                     : [], highlights: typeof propertyData.highlights === "string"
                     ? propertyData.highlights.split(",")
-                    : [], isPetsAllowed: propertyData.isPetsAllowed === "true", isPrkingInculuded: propertyData.isPrkingIncluded === "true", pricePerMonth: parseFloat(propertyData.pricePerMonth), securityDeposit: parseFloat(propertyData.securityDeposit), applicationFee: parseFloat(propertyData.applicationFee), beds: parseInt(propertyData.beds), baths: parseFloat(propertyData.baths), squreFeet: parseInt(propertyData.squreFeet) }),
+                    : [], isPetsAllowed: propertyData.isPetsAllowed === "true", isParkingIncluded: propertyData.isParkingIncluded === "true", pricePerMonth: parseFloat(propertyData.pricePerMonth), securityDeposit: parseFloat(propertyData.securityDeposit), applicationFee: parseFloat(propertyData.applicationFee), beds: parseInt(propertyData.beds), baths: parseFloat(propertyData.baths), squareFeet: parseInt(propertyData.squareFeet) }),
             include: {
                 location: true,
                 manager: true,
@@ -202,6 +202,7 @@ const createProperty = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(201).json(newProperty);
     }
     catch (err) {
+        console.error("Error creating property:", err);
         res.status(500).json({ message: `Error creating property: ${err.message}`, error: err.message });
     }
 });
